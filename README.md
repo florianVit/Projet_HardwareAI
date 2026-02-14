@@ -8,8 +8,8 @@ Comparer les performances de différents types de processeurs (CPU, GPU, TPU) su
 
 ### Plateformes testées
 - **CPU** : Tests locaux sur PC
-- **GPU** : Tests locaux (ex: RTX 3060)
-- **TPU** : Tests via Google Colab
+- **GPU** : Tests locaux (ex: RTX 3060 pour Florian, )
+- **TPU** : Tests via Google Colab (TPU device: xla:0, v5e1)
 
 ### Métriques analysées
 - **Performance** : GFLOPS, temps d'exécution (moyenne, p50, p95)
@@ -17,38 +17,23 @@ Comparer les performances de différents types de processeurs (CPU, GPU, TPU) su
 - **Efficacité énergétique** : Comparaison basée sur les specs constructeur
 
 ### Tests de référence
-1. **Multiplication matricielle (MatMul)** - Implémenté
+1. **Multiplication matricielle (MatMul)**
    - Différentes tailles de matrices (S, M, L)
    - Mesure des temps de transfert (H2D, D2H) et de calcul
    
-2. **Réseaux de neurones convolutifs (CNN)** - À venir
+2. à décider, CNN ?
 
-## Structure du projet
+3. à décider (ou juste rien xD)
 
-```
-.
-├── test.ipynb                  # Notebook principal avec benchmarks
-├── results/
-│   └── matmul_cpu_gpu.csv     # Résultats des tests MatMul
-└── README.md
-```
+## Résultats 
 
-## Résultats préliminaires
 
-Les premiers tests sur MatMul montrent que :
-- **Petites matrices** : CPU compétitif (overhead du GPU)
-- **Grandes matrices** : GPU apporte un gain significatif (×6 sur RTX 3060)
-- **Transferts mémoire** : Impact important sur les performances GPU
+## Applications (pourquoi chosir)
 
-## Applications pratiques
-
-Selon les résultats, identification des cas d'usage optimaux :
+Cas d'usage :
 - **CPU** : Calculs légers, latence faible, flexibilité
 - **GPU** : Calculs massifs parallélisables, throughput élevé
 - **TPU** : Inférence/entraînement réseaux de neurones, efficacité énergétique
 
 ## Limitations
 
-- Dépendance au matériel disponible
-- Variabilité des environnements de test
-- Overhead des transferts mémoire pour GPU/TPU
