@@ -55,10 +55,11 @@ python -c "from test import main; main()"
 Modifiez la cellule 5 :
 ```python
 SIZES = {"S": 1024, "M": 4096, "L": 8192}  # Ajuster selon votre RAM
-CPU_THREADS = None  # Laisser None pour auto, ou spécifier (1, 4, 8, etc)
+CPU_THREADS = None  # Laisser None pour auto, ou spécifier (1, 4, 8, etc), en soit ça permet surtout de limiter ou d’augmenter le parallélisme CPU,
+                    # ce qui est utile pour analyser l’influence du nombre de cœurs sur les performances et l’énergie
 POWER_W = {
-    "cpu": 45,   # Remplacer par le TDP real de votre CPU
-    "gpu": 80,   # Remplacer par la TGP de votre GPU
+    "cpu": 45,   # Ici j'ai mit mes composants donc à vous de check les votres
+    "gpu": 80,   #
 }
 ```
 
