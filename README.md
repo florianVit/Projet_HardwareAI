@@ -2,53 +2,109 @@
 
 ## Objectif
 
-Comparer les performances de différents types de processeurs (CPU, GPU, TPU) sur des opérations de calcul intensif, afin d'analyser leurs caractéristiques en termes de latence, débit et efficacité énergétique.
+Comparer les performances de différents types de processeurs (CPU, GPU, TPU) sur des opérations de calcul intensif. Analyse des caractéristiques en termes de latence, débit (GFLOPS), decomposition des étapes et efficacité énergétique.
+
+## Configuration matérielle
+
+| Composant | Modèle | Puissance |
+|-----------|--------|-----------|
+| **CPU** | Intel Core i7-11800H | 45W (TDP) |
+| **GPU** | NVIDIA GeForce RTX 3060 Laptop | 80W (TGP) |
+| **TPU** | À tester via Google Colab | - |
 
 ## Méthodologie
 
-### Plateformes testées
-- **CPU** : Tests locaux sur PC
-- **GPU** : Tests locaux (ex: RTX 3060)
-- **TPU** : Tests via Google Colab
+### Opérations de référence
 
-### Métriques analysées
-- **Performance** : GFLOPS, temps d'exécution (moyenne, p50, p95)
-- **Latence** : Décomposition des étapes (transfert mémoire, calcul, récupération)
-- **Efficacité énergétique** : Comparaison basée sur les specs constructeur
+**MatMul (Multiplication matricielle FP32)** - Principal benchmark
+- Matrice carrée de taille N × N
+- Tailles testées : S (1024), M (4096), L (8192)
+- Warmup : 20 itérations
+- Mesures : 100 itérations
 
-### Tests de référence
-1. **Multiplication matricielle (MatMul)** - Implémenté
-   - Différentes tailles de matrices (S, M, L)
-   - Mesure des temps de transfert (H2D, D2H) et de calcul
-   
-2. **Réseaux de neurones convolutifs (CNN)** - À venir
+### Métriques collectées
 
-## Structure du projet
+| Métrique | Description |
+|----------|-------------|
+| **mean_ms** | Temps moyen d'exécution (ms) |
+| **p50_ms** | Percentile 50 (temps typique) |
+| **p95_ms** | Percentile 95 (cas lent) |
+| **gflops** | Débit de calcul (Giga FLOPs/sec) |
+| **h2d_ms** (GPU) | Transfert Host→Device (ms) |
+| **compute_ms** | Temps de calcul pur (ms) |
+| **d2h_ms** (GPU) | Transfert Device→Host (ms) |
+| **energy_j** | Énergie totale estimée (Joules) |
 
+
+## Comment lancer le benchmark
+
+### 1. Exécuter le benchmark local
+
+Dans le notebook `test.ipynb` :
+- Cellule 1 : Vérifier l'installation (Torch, CUDA)
+- Cellule 2 : Importer les dépendances
+- Cellule 5 : Lancer la configuration et les benchmarks
+
+```python
+# Les résultats seront sauvegardés dans results/matmul_cpu_gpu.csv
+python -c "from test import main; main()"
 ```
-.
-├── test.ipynb                  # Notebook principal avec benchmarks
-├── results/
-│   └── matmul_cpu_gpu.csv     # Résultats des tests MatMul
-└── README.md
+
+### 2. Adapter à votre matériel
+
+Modifiez la cellule 5 :
+```python
+SIZES = {"S": 1024, "M": 4096, "L": 8192}  # Ajuster selon votre RAM
+CPU_THREADS = None  # Laisser None pour auto, ou spécifier (1, 4, 8, etc)
+POWER_W = {
+    "cpu": 45,   # Remplacer par le TDP real de votre CPU
+    "gpu": 80,   # Remplacer par la TGP de votre GPU
+}
 ```
 
-## Résultats préliminaires
+### 3. Benchmark sur TPU (Google Colab)
 
-Les premiers tests sur MatMul montrent que :
-- **Petites matrices** : CPU compétitif (overhead du GPU)
-- **Grandes matrices** : GPU apporte un gain significatif (×6 sur RTX 3060)
-- **Transferts mémoire** : Impact important sur les performances GPU
+À ajouter : Notebook Colab avec torch_xla ou JAX, exportant un CSV identique.
 
-## Applications pratiques
+## Résultats attendus
 
-Selon les résultats, identification des cas d'usage optimaux :
-- **CPU** : Calculs légers, latence faible, flexibilité
-- **GPU** : Calculs massifs parallélisables, throughput élevé
-- **TPU** : Inférence/entraînement réseaux de neurones, efficacité énergétique
+Le file **results/matmul_cpu_gpu.csv** contient une ligne par (device, size) :
+
+```csv
+device,size,N,mean_ms,p50_ms,p95_ms,gflops,h2d_ms,compute_ms,d2h_ms,power_w,energy_j,compute_energy_j
+cpu,S,1024,...
+cpu,M,4096,...
+cpu,L,8192,...
+gpu,S,1024,...
+gpu,M,4096,...
+gpu,L,8192,...
+```
+
+## Analyse et interprétation
+
+### Cas d'usage recommandés
+
+| Processeur | Avantages | Limitations | Usages |
+|-----------|-----------|------------|--------|
+| **CPU** | Latence basse, flexibilité, versatilité | Débit limité pour FP operations | Calculs légers, embarqué, CPU-bound |
+| **GPU** | Massive parallelism, débit élevé (TFLOPS) | Overhead mémoire, consommation | ML training, science computing, gaming |
+| **TPU** | Efficacité énergétique, optimisé ML | Spécialisé (ML uniquement) | Inference/training réseaux neurones, TPU pods |
+
+### Éléments à considérer
+
+1. **Breakeven point** : Taille N à partir de laquelle GPU > CPU
+2. **Efficacité énergétique** : GFLOPS par Watt
+3. **Decomposition latence** : H2D impact vs compute time
+4. **Scalabilité** : Performance avec matrice grand N
 
 ## Limitations
 
-- Dépendance au matériel disponible
-- Variabilité des environnements de test
-- Overhead des transferts mémoire pour GPU/TPU
+
+
+## Prochaines étapes
+
+- [ ] Lancer benchmark CPU/GPU complet
+- [ ] Ajouter benchmark TPU (Colab)
+- [ ] Analyser les résultats bruts
+- [ ] Générer graphiques de comparaison
+- [ ] Rédiger conclusions et recommandations
