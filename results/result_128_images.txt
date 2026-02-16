@@ -1,0 +1,11 @@
+=== CPU vs GPU Stress Benchmark === 
+
+=== Running on CPU === 
+Mean latency: 7238.62 ms/batch 
+P95 latency: 7652.17 ms 
+Throughput: 18 images/sec 
+
+=== Running on CUDA === 
+Mean latency: 330.68 ms/batch 
+P95 latency: 336.49 ms 
+Throughput: 387 images/sec
