@@ -104,8 +104,8 @@ gpu,L,8192,...
 
 ## Prochaines étapes
 
-- [ ] Lancer benchmark CPU/GPU complet
-- [ ] Ajouter benchmark TPU (Colab)
+- [*] Lancer benchmark CPU/GPU complet
+- [*] Ajouter benchmark TPU (Colab)
 - [ ] Analyser les résultats bruts
 - [ ] Générer graphiques de comparaison
 - [ ] Rédiger conclusions et recommandations
